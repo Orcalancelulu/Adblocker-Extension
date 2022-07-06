@@ -1,19 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="button.css">
+    <link rel="stylesheet" href="stylesheet.css">
+    
   </head>
   <body>
-    <button id="changeColor"></button>
-
-    <button id="saveText">SAVE</button>
-    <button id="loadText">LOAD</button>
-
-    <form id="testForm">
-      <label for="test">test</label>
-      <input type="text" id="test" name="test"><br><br>
-    </form>
-    <p id="showInfo"></p>
     <script src="popup.js"></script>
+    <div id="wrap">
+      <div id="upperBlock">
+        <div id="switchOnOff">
+          <a id="offText">Off</a>
+          <a id="onText">On</a>
+          <div id="switchContainer">
+            <label class="switch">
+              <input type="checkbox">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+
+        <input type="image" src="zahnrad.png" id="settings"/>
+        <img src="logo_ad.jpg" id="logo"/>
+        
+      </div>
+      <div id="middleBlock">
+        <p id="siteName">stackoverflow.com</p>
+        <p class="showBlockingInfo" id="showInfoLive">nioasi</p>
+        <p class="showBlockingInfo">Total Blocked: 0</p>
+      </div>
+      <div id="lowerBlock">
+        <button class="blockType" id="buttonNetwork">Network-Blocking</button>
+        <button class="blockType" id="buttonDeleter">Delete Ad-Containers</button>
+       
+      </div>
+    </div>
+    
   </body>
 </html> 

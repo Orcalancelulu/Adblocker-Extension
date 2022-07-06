@@ -1,0 +1,8 @@
+whitelist for websites: excludedInitiatorDomains
+blacklist for server: requestDomains
+
+mit python serverlist umformatiert, noch von Hand ergänzt
+https://pgl.yoyo.org/as/#how
+
+https://www.flaticon.com/de/kostenlose-icons/zahnrad
+https://www.flaticon.com/de/kostenloses-icon/einstellungen-zahnrad_63827
