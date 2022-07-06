@@ -4,7 +4,7 @@
 
 Einfacher Adblocker, welcher die Werbung mit tags findet ✔️
 
-Besserer Adblocker, welcher die Werbung durch Network Traffic findet
+Besserer Adblocker, welcher die Werbung durch Network Traffic findet ✔️
 
 Tracker blockieren, anstatt nur Werbung
 
