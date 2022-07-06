@@ -6,9 +6,9 @@ Einfacher Adblocker, welcher die Werbung mit tags findet ✔️
 
 Besserer Adblocker, welcher die Werbung durch Network Traffic findet ✔️
 
-Tracker blockieren, anstatt nur Werbung
+Tracker blockieren, anstatt nur Werbung ✔️
 
-Adblocker aktivieren, wenn man die Seite öffnet (durchgehend aktiv)
+Adblocker aktivieren, wenn man die Seite öffnet (durchgehend aktiv) ✔️
 
 Anzeigen, wie viel Werbung geblockt wurde
 
