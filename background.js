@@ -48,7 +48,9 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request.asking === "iwantdata") {
       console.log(totalAdCount);
-      sendResponse({dataLive: getAdCount(tabId), dataTotal: totalAdCount});     
+      adCount = getAdCount(tabId);
+      if (!isContainerEnabled && !isNetworkEnabled) adCount = 0; 
+      sendResponse({dataLive: adCount, dataTotal: totalAdCount});     
     } else if (request.asking == "canidelete") {
       sendResponse({answer: isContainerEnabled});
     } else if (typeof request.info == "number"){
@@ -69,3 +71,7 @@ chrome.runtime.onMessage.addListener(
     }
   }
 )
+/*
+chrome.declarativeNetRequest.addListener("MatchedRule", function(result) {
+  console.log("matched");
+})*/
