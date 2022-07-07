@@ -1,14 +1,25 @@
-adCounter = 0;
+chrome.runtime.sendMessage({asking: "canidelete"}, function (response) {
+    if (response.answer) {
+        blocking();
+    }
+})    
 
-regexSearch = /((?<![eofpt])(ads|ad|advertisement|werbung)(?!e))/i;
-searchAds(document.body.children);
-if(typeof maxAdCounter == "undefined") {
-    maxAdCounter = adCounter;
+
+function blocking() {
+    adCounter = 0;
+
+    regexSearch = /((?<![eofpt])(ads|ad|advertisement|werbung)(?!e))/i;
+    searchAds(document.body.children);
+    if(typeof maxAdCounter == "undefined") {
+        maxAdCounter = adCounter;
+    }
+    sendMessageToExtension();
 }
-console.log(maxAdCounter);
-chrome.runtime.sendMessage({info: maxAdCounter});
 
-
+function sendMessageToExtension() {
+    console.log("sending");
+    chrome.runtime.sendMessage({info: maxAdCounter});
+}
 
 function searchAds(childList) {
     Array.from(childList).forEach(child => {
@@ -16,7 +27,6 @@ function searchAds(childList) {
         let foundIdElements = child.id.search(regexSearch);
         let foundClassElements = child.classList.value.search(regexSearch);
         if (foundIdElements >= 0 || foundClassElements >= 0) {
-            
             if (child.tagName == "DIV") adCounter++;
             child.remove();
         } else if(child.children != null) {
@@ -24,11 +34,3 @@ function searchAds(childList) {
         }
     })
 }
-
-
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-      console.log("back: " + request.info);
-    }
-  );
-

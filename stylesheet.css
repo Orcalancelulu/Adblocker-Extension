@@ -33,10 +33,10 @@ a {
 }
 
 #buttonNetwork {
-  background-color: #21f367;
+  background-color: LightGreen;
 }
 #buttonDeleter {
-  background-color: #21f367;
+  background-color: LightGreen;
 }
 
 
@@ -58,7 +58,7 @@ a {
 
 #middleBlock {
   margin-top: 25px;
-  border-color: #21f367;
+  border-color: Gainsboro;
   border-width: 5px;
   border-style: solid;
 }
@@ -71,7 +71,7 @@ a {
   padding-top: 5px;
   padding-bottom: 5px;
   margin-bottom: 5px;
-  background-color: #21f367;  
+  background-color: Gainsboro;  
 }
 
 #logo {
@@ -163,11 +163,11 @@ a {
 }
 
 input:checked + .slider {
-  background-color: #21f367;
+  background-color: LightGreen;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #21f367;
+  box-shadow: 0 0 1px LightGreen;
 }
 
 input:checked + .slider:before {

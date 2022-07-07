@@ -6,3 +6,18 @@ https://pgl.yoyo.org/as/#how
 
 https://www.flaticon.com/de/kostenlose-icons/zahnrad
 https://www.flaticon.com/de/kostenloses-icon/einstellungen-zahnrad_63827
+
+
+
+background.js, sammelt informationen und gibt sie weiter
+
+Ziel Donnerstag: 
+1. Schieberegler anpassen
+2. AdCounter Live und Total (mit cloud sync)
+3. Website Namen anzeigen
+4. (Zusatz) "tomato" "lightgreen" if else zeugs besser machen mit bools
+5. (Zusatz) einstellungen, fragezeichen über knöpfe mit infos, bei google.com adblocker abschalten --> Whitelist machen
+
+Freitag
+1. Zeugs von Donnerstag fertig machen (zusatzzeugs). 
+2. Youtube Ads blocken
