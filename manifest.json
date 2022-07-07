@@ -12,7 +12,7 @@
     "background": {
       "service_worker": "background.js"
     },
-    "permissions": ["storage", "activeTab", "scripting", "webNavigation", "declarativeNetRequest"],
+    "permissions": ["storage", "activeTab", "tabs", "scripting", "webNavigation", "declarativeNetRequest"],
     "host_permissions": ["https://*/", "http://*/"],
     "action": {
         "default_popup": "popup.html",
