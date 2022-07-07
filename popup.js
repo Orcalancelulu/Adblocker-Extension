@@ -98,8 +98,9 @@ function changeSlider() {
 
 function getLiveData() {
   chrome.runtime.sendMessage({asking: "iwantdata"}, function (response) {
-    console.log(response.data);
+    console.log(response.dataLive);
     
-    document.getElementById("showInfoLive").innerHTML = "Currently Blocking: " + response.data;
+    document.getElementById("showInfoLive").innerHTML = "Currently Blocking: " + response.dataLive;
+    document.getElementById("showInfoTotal").innerHTML = "Total Blocked: " + response.dataTotal;
   })    
 } 

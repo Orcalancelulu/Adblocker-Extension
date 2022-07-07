@@ -13,7 +13,7 @@ background.js, sammelt informationen und gibt sie weiter
 
 Ziel Donnerstag: 
 1. Schieberegler anpassen FERTIG
-2. AdCounter Live und Total (mit cloud sync)
+2. AdCounter Live und Total (mit cloud sync) FERTIG
 3. Website Namen anzeigen FERTIG
 4. (Zusatz) "tomato" "lightgreen" if else zeugs besser machen mit bools FERTIG
 5. (Zusatz) einstellungen, fragezeichen über knöpfe mit infos, bei google.com adblocker abschalten --> Whitelist machen

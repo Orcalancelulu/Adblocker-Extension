@@ -1,6 +1,12 @@
-let adCounterLive = 0;
 let isNetworkEnabled = true;
 let isContainerEnabled = true;
+let tabAdCountArray = [];
+let tabId;
+let totalAdCount;
+
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+  tabId = activeInfo.tabId;
+})
 
 function enableDisableNetwork() {
   if(isNetworkEnabled) {
@@ -24,15 +30,38 @@ function enableDisableContainerDelete() {
   }
 }
 
+function getAdCount(tab) {
+  let tabAdCount = tabAdCountArray.find(tabAdCount => tabAdCount.tab == tab);
+  if (typeof tabAdCount.count == "number") return tabAdCount.count;
+  return 0;
+}
+
+function saveAdCount(tab, adCount) {
+  let tabAdCount = {
+    "tab": tab, 
+    "count": adCount
+  }
+  tabAdCountArray.push(tabAdCount)
+}
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request.asking === "iwantdata") {
-      sendResponse({data: adCounterLive});
+      console.log(totalAdCount);
+      sendResponse({dataLive: getAdCount(tabId), dataTotal: totalAdCount});     
     } else if (request.asking == "canidelete") {
-      sendResponse({answer: isContainerEnabled})
+      sendResponse({answer: isContainerEnabled});
     } else if (typeof request.info == "number"){
-      console.log(typeof request.info);
-      adCounterLive = request.info;
+      saveAdCount(sender.tab.id, request.info);
+      chrome.storage.sync.get(["totalAdCount"], function(result) {
+        if (typeof result.totalAdCount != "undefined") {
+          totalAdCount = result.totalAdCount + request.info;
+          chrome.storage.sync.set({totalAdCount: totalAdCount});
+        } else {
+          chrome.storage.sync.set({totalAdCount: 0});
+          totalAdCount = 0;
+        }
+      })
     } else if (request.buttonEvent == "network") {
       enableDisableNetwork();
     } else if (request.buttonEvent == "container") {
