@@ -30,3 +30,5 @@ developer.lanceborer@gmail.com
 
 
 Quelle Fragezeichen-Popup: https://tutorialzine.com/2014/07/css-inline-help-tips
+
+        "requestDomains": 
