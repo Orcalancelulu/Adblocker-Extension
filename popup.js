@@ -5,7 +5,7 @@ let buttonDeleterEnabled;
 
 buttonNetwork = document.getElementById("buttonNetwork");
 buttonDeleter = document.getElementById("buttonDeleter");
-
+settingsButton = document.getElementById("settings");
 slider = document.getElementById("checkboxSwitch");
 
 chrome.declarativeNetRequest.getEnabledRulesets({rulesetIds: ["weakRules"]}).then(function (response) {
@@ -51,6 +51,12 @@ chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
 buttonNetwork.addEventListener("click", sendNetworkMessage);
 buttonDeleter.addEventListener("click", sendDeleterMessage);
 slider.addEventListener("click", changeSlider);
+settingsButton.addEventListener("click", openSettings);
+
+
+function openSettings() {
+  window.open("settingsPage.html", "_self");
+}
 
 function sendNetworkMessage() {
   if (buttonNetworkEnabled) {

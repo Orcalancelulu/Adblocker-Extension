@@ -7,21 +7,28 @@ let networkBeforeArray = [];
 let networkAfterArray = [];
 
 chrome.runtime.onInstalled.addListener(function() {
-  let blacklist
+  let blacklist;
+  let whitelist;
   const url = chrome.runtime.getURL("storage/blacklist.json");
   fetch(url)
   .then(function(response) {
     response.json().then(function(response){
       blacklist = response;
-      let whitelist = ["google.com", "google.ch"];  
-      chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: [1],
-        addRules: [{
-          "id": 1,
-          "priority": 1,
-          "action": {"type": "block"},
-          "condition": {"excludedInitiatorDomains": whitelist, "requestDomains": blacklist}
-        }]
+      chrome.storage.sync.get(["whitelist"], function(response) {
+        if(response.whitelist === undefined) {
+          whitelist = [];
+        } else {
+          whitelist = response.whitelist;
+        }
+        chrome.declarativeNetRequest.updateDynamicRules({
+          removeRuleIds: [1],
+          addRules: [{
+            "id": 1,
+            "priority": 1,
+            "action": {"type": "block"},
+            "condition": {"excludedInitiatorDomains": whitelist, "requestDomains": blacklist}
+          }]
+        })
       })
     });
   })
@@ -34,12 +41,10 @@ chrome.runtime.onInstalled.addListener(function() {
 })
 
 chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie viele Anfragen reingehen
-  console.log(request.url);
   networkBeforeArray.push(request.url);
 }, {urls: ["<all_urls>"]})
 
 chrome.webRequest.onCompleted.addListener(function(request) { //zählen, wie viele Anfragen es durch den Filter schaffen, Differenz von vorher ist die Anzahl geblockter Werbung
-  console.log(request.url);
   networkAfterArray.push(request.url);
 }, {urls: ["<all_urls>"]})
 
@@ -110,7 +115,6 @@ chrome.runtime.onMessage.addListener(
     } else if (request.asking == "canidelete") {
       sendResponse({answer: isContainerEnabled});
     } else if (typeof request.info == "number"){
-      console.log("data arrived");
       saveAdCount(sender.tab.id, request.info);
       chrome.storage.sync.get(["totalAdCount"], function(result) {
         if (typeof result.totalAdCount != "undefined") {

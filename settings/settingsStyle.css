@@ -1,0 +1,176 @@
+#wrap {
+    width: 200px;
+    height: 288px;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    
+}
+
+#title {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#backToHome {
+    width: 22px;
+    height: 15px;
+    position: absolute;
+    left: 15px;
+    top: 15px;
+}
+
+#listContainer {
+    height: 240px;
+    /*overflow: hidden;
+    overflow-y: scroll;*/
+    
+    margin-top: 15px;
+    
+}
+
+#whitelistInput {
+    outline: none;
+    width: 180px;
+    padding-left: 10px;
+    padding-right: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-style: solid solid none solid;
+    border-width: 5px;
+    border-color: gainsboro;
+}
+
+
+ul {
+    width: 190px;
+    margin-top: 0px;
+    list-style: none;
+    padding-left: 0px;
+    border-style: none solid solid solid;
+    border-width: 5px;
+    border-color:gainsboro;
+
+}
+
+li {
+    width:180px;
+    border-style: solid none none none;
+    border-width: 5px;
+    border-color:gainsboro;
+    padding-left: 10px;
+    padding-right: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.deleteSite {
+    position: absolute;
+    right: 20px;
+    color: gainsboro;
+    transition: 0.2s;
+
+}
+
+.deleteSite:hover {
+    color: black;
+    cursor: pointer;
+}
+
+#addInput {
+    font-size: 20px;
+    position: absolute;
+    right: 18px;
+    color: gainsboro;
+    top: 69px;
+    transition: 0.2s;
+}
+
+#addInput:hover {
+    color:black;
+    cursor: pointer;
+}
+
+.help-tip{
+
+    z-index: 10;
+    position: absolute;
+    top: 31px;
+    right: 60px;
+    text-align: center;
+    background-color: gainsboro;
+    border-radius: 50%;
+    width: 13px;
+    height: 13px;
+    font-size: 11px;
+    line-height: 14px;
+    cursor: default;
+}
+
+.help-tip:before{
+    content:'?';
+    font-weight: bold;
+    color:rgb(255, 255, 255);
+}
+
+.help-tip:hover p{
+    display:block;
+    transform-origin: 100% 0%;
+
+    -webkit-animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
+
+}
+
+.help-tip p{    /* The tooltip */
+    display: none;
+    text-align: left;
+    background-color: #1E2021;
+    padding: 20px;
+    width: 150px;
+    position: absolute;
+    border-radius: 3px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    right: -50px;
+    color: #FFF;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.help-tip p:before{ /* The pointer of the tooltip */
+    position: absolute;
+    content: '';
+    width:0;
+    height: 0;
+    border:6px solid transparent;
+    border-bottom-color:#1E2021;
+    right: 50px;
+    top:-12px;
+}
+
+.help-tip p:after{ /* Prevents the tooltip from being hidden */
+    width:100%;
+    height:40px;
+    content:'';
+    position: absolute;
+    top:-40px;
+    left:0;
+}
+
+/* CSS animation */
+
+@-webkit-keyframes fadeIn {
+    0% { 
+        opacity:0; 
+        transform: scale(0.6);
+    }
+
+    100% {
+        opacity:100%;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% { opacity:0; }
+    100% { opacity:100%; }
+}
