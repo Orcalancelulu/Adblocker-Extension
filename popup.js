@@ -24,7 +24,7 @@ chrome.runtime.sendMessage({asking: "canidelete"}, function (response) {
     buttonDeleter.style.backgroundColor = "LightGreen";
     buttonDeleterEnabled = true;
   } else {
-    buttonDeleter.style.backgroundColor = "tomato";
+    buttonDeleter.style.backgroundColor = "Gainsboro";
     buttonDeleterEnabled = false;
   }
   checkSlider(); //2 mal checkSlider, weil die Funktionen asynchron sind. Man weiss nicht, welches zuerst fertig ist, deshalb einfach 2 mal checken
@@ -67,7 +67,7 @@ function sendNetworkMessage() {
 
 function sendDeleterMessage() {
   if (buttonDeleterEnabled) {
-    buttonDeleter.style.backgroundColor = "tomato";
+    buttonDeleter.style.backgroundColor = "Gainsboro";
     buttonDeleterEnabled = false
     checkSlider();
   } else {

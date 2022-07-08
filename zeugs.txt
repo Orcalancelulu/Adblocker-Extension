@@ -16,12 +16,16 @@ Ziel Donnerstag:
 2. AdCounter Live und Total (mit cloud sync) FERTIG
 3. Website Namen anzeigen FERTIG
 4. (Zusatz) "tomato" "lightgreen" if else zeugs besser machen mit bools FERTIG
-5. (Zusatz) einstellungen, fragezeichen über knöpfe mit infos, bei google.com adblocker abschalten --> Whitelist machen
+5. (Zusatz) einstellungen, fragezeichen über knöpfe mit infos, bei google.com adblocker abschalten --> Whitelist machen FERTIG
 
 Freitag
-1. Zeugs von Donnerstag fertig machen (zusatzzeugs). 
-2. Youtube Ads blocken
+1. Zeugs von Donnerstag fertig machen (zusatzzeugs).  FERTIG
+2. Fragezeichen FERTIG
+3. Network Counting
 
 
 Developer Account:
 developer.lanceborer@gmail.com
+
+
+Quelle Fragezeichen-Popup: https://tutorialzine.com/2014/07/css-inline-help-tips
