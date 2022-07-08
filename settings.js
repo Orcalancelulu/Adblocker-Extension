@@ -19,12 +19,11 @@ homeButton.addEventListener("click", openHome);
 
 function addToWhitelist() {
     let inputElement = document.getElementById("whitelistInput");
+    if (inputElement.value.length < 1) return;
     whitelist.push(inputElement.value);
     createListElement(inputElement.value);
     inputElement.value = "";
     chrome.storage.sync.set({whitelist: whitelist});
-
-
 }
 
 function createListElement(siteName) {

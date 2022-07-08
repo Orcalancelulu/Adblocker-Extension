@@ -29,6 +29,7 @@
 }
 
 #whitelistInput {
+    font-size: 15px;
     outline: none;
     width: 180px;
     padding-left: 10px;

@@ -3,6 +3,7 @@ let isContainerEnabled = false;
 let tabAdCountArray = [];
 let tabId;
 let totalAdCount;
+let networkAdCount = 0;
 let networkBeforeArray = [];
 let networkAfterArray = [];
 
@@ -20,6 +21,7 @@ chrome.runtime.onInstalled.addListener(function() {
         } else {
           whitelist = response.whitelist;
         }
+        console.log(whitelist);
         chrome.declarativeNetRequest.updateDynamicRules({
           removeRuleIds: [1],
           addRules: [{
@@ -29,7 +31,7 @@ chrome.runtime.onInstalled.addListener(function() {
             "condition": {"excludedInitiatorDomains": whitelist, "requestDomains": blacklist}
           }]
         })
-      })
+      }) //hier: networkadcounter auch mit tab listen machen
     });
   })
 
@@ -76,8 +78,8 @@ function enableDisableContainerDelete() {
 
 function getAdCount(tab) {
   let tabAdCount = tabAdCountArray.find(tabAdCount => tabAdCount.tab == tab);
-  if (tabAdCount === undefined) return 0;
-  return tabAdCount.count;
+  if (tabAdCount === undefined) return networkAdCount;
+  return tabAdCount.count + networkAdCount;
 }
 
 function saveAdCount(tab, adCount) {
@@ -102,14 +104,14 @@ function getNetworkCount() {
       totalAdCount = 0;
     }
   })
-
-  return networkCount;
+  networkAdCount += networkCount;
 }
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request.asking === "iwantdata") {
-      adCount = getAdCount(tabId) + getNetworkCount();
+      getNetworkCount();
+      adCount = getAdCount(tabId);
       if (!isContainerEnabled && !isNetworkEnabled) adCount = 0; 
       sendResponse({dataLive: adCount, dataTotal: totalAdCount});     
     } else if (request.asking == "canidelete") {
