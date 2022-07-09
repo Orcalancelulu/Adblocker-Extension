@@ -43,7 +43,6 @@ function createListElement(siteName) {
         whitelist.splice(whitelistIndex, 1);
         chrome.storage.sync.set({whitelist: whitelist});
         chrome.runtime.sendMessage({buttonEvent: "whitelist"});
-
     });
 
     siteNameElement.innerText = siteName;

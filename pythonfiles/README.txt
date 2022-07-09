@@ -1,0 +1,1 @@
+Das Pythonscript wurde verwendet, um die Blacklist zu erstellen. Wird nicht aktiv von der Extension gebraucht.

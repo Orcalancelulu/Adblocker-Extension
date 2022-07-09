@@ -1,7 +1,5 @@
 import json
 
-
-
 textFile = open("serverlist.txt", "r")
 
 validUrls = []

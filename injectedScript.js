@@ -1,26 +1,29 @@
 adCounter = 0;
 
+//falls container-delete abgeschaltet wurde, kommt false zurück und es passiert nichts
 chrome.runtime.sendMessage({asking: "canidelete"}, function (response) {
     if (response.answer) {
         blocking();
     }
 })    
 
+//blocken der werbung
 function blocking() {
-    regexSearch = /((?<![eofpt])(ads|ad|advertisement|werbung)(?!e))/i;
-    searchAds(document.body.children);
-    if(typeof maxAdCounter == "undefined") {
+    regexSearch = /((?<![eofpt])(ads|ad|advertisement|werbung)(?!e))/i; //falls e,o,f,p oder t vor den wörter steht, wirds nicht gematched
+    searchAds(document.body.children); //rekursive Funktion wird aufgerufen, Html ist wie ein "Baum" aufgebaut
+    if(typeof maxAdCounter == "undefined") { 
         maxAdCounter = adCounter;
     }
-    sendMessageToExtension();
+    sendMessageToExtension(); //fertig geblockt, Anzahl geblockte Werbung wird weitergeleitet an background.js
 }
 
 function sendMessageToExtension() {
-    console.log("sending");
     chrome.runtime.sendMessage({info: maxAdCounter});
 }
 
-function searchAds(childList) {
+function searchAds(childList) { /*childlist ist eine Liste aus Html Elementen. Für jedes wird geprüft, ob es Werbung in der 
+    Id und class hat. Falls ja, wird das Element gelöscht (dabei auch alle Kinder). Falls nein, werden die Kinder dieses 
+    Elements mit der gleichen Funktion überprüft.*/
     Array.from(childList).forEach(child => {
        
         let foundIdElements = child.id.search(regexSearch);
