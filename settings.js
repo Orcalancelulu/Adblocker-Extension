@@ -24,6 +24,7 @@ function addToWhitelist() {
     createListElement(inputElement.value);
     inputElement.value = "";
     chrome.storage.sync.set({whitelist: whitelist});
+    chrome.runtime.sendMessage({buttonEvent: "whitelist"});
 }
 
 function createListElement(siteName) {
@@ -41,6 +42,8 @@ function createListElement(siteName) {
         if (whitelistIndex < 0) console.log("something went wrong");
         whitelist.splice(whitelistIndex, 1);
         chrome.storage.sync.set({whitelist: whitelist});
+        chrome.runtime.sendMessage({buttonEvent: "whitelist"});
+
     });
 
     siteNameElement.innerText = siteName;

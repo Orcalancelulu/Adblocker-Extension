@@ -7,39 +7,14 @@ let networkAdCount = 0;
 let networkBeforeArray = [];
 let networkAfterArray = [];
 
+
+chrome.storage.sync.get(["totalAdCount"], function(response) {
+  totalAdCount = response.totalAdCount;
+  console.log("totaladcount has been set: " + totalAdCount);
+})
+
 chrome.runtime.onInstalled.addListener(function() {
-  let blacklist;
-  let whitelist;
-  const url = chrome.runtime.getURL("storage/blacklist.json");
-  fetch(url)
-  .then(function(response) {
-    response.json().then(function(response){
-      blacklist = response;
-      chrome.storage.sync.get(["whitelist"], function(response) {
-        if(response.whitelist === undefined) {
-          whitelist = [];
-        } else {
-          whitelist = response.whitelist;
-        }
-        console.log(whitelist);
-        chrome.declarativeNetRequest.updateDynamicRules({
-          removeRuleIds: [1],
-          addRules: [{
-            "id": 1,
-            "priority": 1,
-            "action": {"type": "block"},
-            "condition": {"excludedInitiatorDomains": whitelist, "requestDomains": blacklist}
-          }]
-        })
-      }) //hier: networkadcounter auch mit tab listen machen
-    });
-  })
-
-  chrome.storage.sync.get(["totalAdCount"], function(response) {
-    totalAdCount = response.totalAdCount;
-  })
-
-
+  updateWhitelistBlacklist
 })
 
 chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie viele Anfragen reingehen
@@ -131,6 +106,37 @@ chrome.runtime.onMessage.addListener(
       enableDisableNetwork();
     } else if (request.buttonEvent == "container") {
       enableDisableContainerDelete();
+    } else if (request.buttonEvent == "whitelist") {
+      updateWhitelistBlacklist();
     }
   }
 )
+
+function updateWhitelistBlacklist() {
+  let blacklist;
+  let whitelist;
+  const url = chrome.runtime.getURL("storage/blacklist.json");
+  fetch(url)
+  .then(function(response) {
+    response.json().then(function(response){
+      blacklist = response;
+      chrome.storage.sync.get(["whitelist"], function(response) {
+        if(response.whitelist === undefined) {
+          whitelist = [];
+        } else {
+          whitelist = response.whitelist;
+        }
+        console.log(whitelist);
+        chrome.declarativeNetRequest.updateDynamicRules({
+          removeRuleIds: [1],
+          addRules: [{
+            "id": 1,
+            "priority": 1,
+            "action": {"type": "block"},
+            "condition": {"excludedInitiatorDomains": whitelist, "requestDomains": blacklist}
+          }]
+        })
+      }) //hier: networkadcounter auch mit tab listen machen
+    });
+  })
+}
