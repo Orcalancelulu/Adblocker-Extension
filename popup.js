@@ -8,16 +8,16 @@ buttonDeleter = document.getElementById("buttonDeleter");
 settingsButton = document.getElementById("settings");
 slider = document.getElementById("checkboxSwitch");
 
-chrome.declarativeNetRequest.getEnabledRulesets({rulesetIds: ["weakRules"]}).then(function (response) {
-  if (response.length == 0) {
-    buttonNetwork.style.backgroundColor = "tomato";
-    buttonNetworkEnabled = false;
-  } else {
+chrome.runtime.sendMessage({asking: "networkEnabled"}, function (response) {
+  if (response.answer) {
     buttonNetwork.style.backgroundColor = "LightGreen";
     buttonNetworkEnabled = true;
+  } else {
+    buttonNetwork.style.backgroundColor = "tomato";
+    buttonNetworkEnabled = false;
   }
   checkSlider();
-});
+})
 
 chrome.runtime.sendMessage({asking: "canidelete"}, function (response) {
   if (response.answer) {

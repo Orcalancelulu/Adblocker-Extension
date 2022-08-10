@@ -7,7 +7,7 @@ let isContainerEnabled = false;
 let tabAdCountArray = [];
 let tabId;
 let totalAdCount;
-let networkAdCount = 0;
+
 let networkBeforeArray = [];
 let networkAfterArray = [];
 
@@ -19,14 +19,12 @@ chrome.storage.sync.get(["totalAdCount"], function(response) {
     return;
   }
   totalAdCount = response.totalAdCount;
-  console.log("totaladcount has been set: " + totalAdCount);
+  //console.log("totaladcount has been set: " + totalAdCount);
 })
 
-/*wenn die Extension installiert wird, muss die Black- und Whitelist von 
+/*wenn die Extension gestartet wird, muss die Black- und Whitelist von 
 declarativeNetRequest festgelegt werden*/
-chrome.runtime.onInstalled.addListener(function() { 
-  updateWhitelistBlacklist
-})
+updateWhitelistBlacklist(isNetworkEnabled);
 
 
 chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie viele Anfragen reingehen
@@ -37,12 +35,13 @@ chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie
 /*zählen, wie viele Anfragen es durch den Filter schaffen, 
 Differenz von vorher ist die Anzahl geblockter Werbung*/
 chrome.webRequest.onCompleted.addListener(function(request) { 
-  networkAfterArray.push(request.url);
+ networkAfterArray.push(request.url);
 }, {urls: ["<all_urls>"]})
 
 
 //immer den aktiven tab wissen (um adCounter richtig zwischenzuspeichern)
 chrome.tabs.onActivated.addListener(function(activeInfo) {
+  if (typeof tabId != "undefined") console.log("changed tab, old count: " + getAdCount(tabId));
   tabId = activeInfo.tabId;
 })
 
@@ -50,14 +49,10 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 function enableDisableNetwork() {
   if(isNetworkEnabled) {
     isNetworkEnabled = false;
-    chrome.declarativeNetRequest.updateEnabledRulesets({
-      disableRulesetIds: ["weakRules"]
-    }); 
+    updateWhitelistBlacklist(false);
   } else {
     isNetworkEnabled = true;
-    chrome.declarativeNetRequest.updateEnabledRulesets({
-      enableRulesetIds: ["weakRules"]
-    }); 
+    updateWhitelistBlacklist(true);
   }
 }
 
@@ -73,13 +68,37 @@ function enableDisableContainerDelete() {
 
 //durch den aktiven tab wird der zwischengespeicherte AdCount ausgelesen
 function getAdCount(tab) {
+  console.log("currently on tab: " + tabId);
   let tabAdCount = tabAdCountArray.find(tabAdCount => tabAdCount.tab == tab);
-  if (tabAdCount === undefined) return networkAdCount;
-  return tabAdCount.count + networkAdCount;
+  let tabAdIndex = tabAdCountArray.indexOf(tabAdCount);
+  console.log("index found at: " + tabAdIndex);
+  if (tabAdIndex == -1) {
+    let networkCount = getNetworkCount();
+    saveAdCount(tabId, networkCount);
+    console.log("index = -1, saving and getting networkcount: " + networkCount);
+    return networkCount;
+  }
+
+  console.log("index found, getting both: saved count: " + tabAdCountArray[tabAdIndex].count);
+  tabAdCountArray[tabAdIndex].count += getNetworkCount();
+  console.log("with network: " + tabAdCountArray[tabAdIndex].count);
+
+  return tabAdCountArray[tabAdIndex].count;
 }
 
 //adCount wird beim aktiven tab gespeichert
 function saveAdCount(tab, adCount) {
+
+  if (adCount > 0) {
+    chrome.storage.sync.get(["totalAdCount"], function (response) {
+      if (response.totalAdCount > -1) {
+
+        totalAdCount = response.totalAdCount + adCount;
+        chrome.storage.sync.set({totalAdCount: totalAdCount});
+      }
+    })
+  }
+
   let tabAdCount = {
     "tab": tab, 
     "count": adCount
@@ -93,46 +112,42 @@ function getNetworkCount() {
   let networkCount = networkBeforeArray.length-networkAfterArray.length;
   networkBeforeArray = [];
   networkAfterArray = [];
-
-  chrome.storage.sync.get(["totalAdCount"], function(result) {
-    if (typeof result.totalAdCount != "undefined") {
-      totalAdCount = result.totalAdCount + networkCount;
-      chrome.storage.sync.set({totalAdCount: totalAdCount});
-    } else {
-      chrome.storage.sync.set({totalAdCount: 0});
-      totalAdCount = 0;
-    }
-  })
-  networkAdCount += networkCount;
+  if (networkCount > 0) {
+    chrome.storage.sync.get(["totalAdCount"], function (response) {
+      if (response.totalAdCount > -1) {
+        totalAdCount = response.totalAdCount + networkCount;
+        chrome.storage.sync.set({totalAdCount: totalAdCount});
+      }
+    })
+  } 
+  console.log("getting networkcount: " + networkCount);
+  return networkCount;
 }
 
 //wenn eine Nachricht reinkommt, wird das aufgerufen. Damit können die anderen Skripte mit background.js kommunizieren
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request.asking === "iwantdata") {
-      getNetworkCount();
-      adCount = getAdCount(tabId);
-      if (!isContainerEnabled && !isNetworkEnabled) adCount = 0; 
+      console.log("data asked");
+      let adCount = getAdCount(tabId);
+      console.log("got " + adCount + " back");
+      chrome.storage.sync.get(["totalAdCount"], function (response) {
+        totalAdCount = response.totalAdCount;
+      })
+      if (adCount < 0) adCount = 0; 
       sendResponse({dataLive: adCount, dataTotal: totalAdCount});     
     } else if (request.asking == "canidelete") {
       sendResponse({answer: isContainerEnabled});
+    } else if (request.asking == "networkEnabled") {
+      sendResponse({answer: isNetworkEnabled});
     } else if (typeof request.info == "number"){
-      saveAdCount(sender.tab.id, request.info);
-      chrome.storage.sync.get(["totalAdCount"], function(result) {
-        if (typeof result.totalAdCount != "undefined") {
-          totalAdCount = result.totalAdCount + request.info;
-          chrome.storage.sync.set({totalAdCount: totalAdCount});
-        } else {
-          chrome.storage.sync.set({totalAdCount: 0});
-          totalAdCount = 0;
-        }
-      })
+      saveAdCount(tabId, request.info);
     } else if (request.buttonEvent == "network") {
       enableDisableNetwork();
     } else if (request.buttonEvent == "container") {
       enableDisableContainerDelete();
     } else if (request.buttonEvent == "whitelist") {
-      updateWhitelistBlacklist();
+      updateWhitelistBlacklist(isNetworkEnabled);
     }
   }
 )
@@ -140,7 +155,7 @@ chrome.runtime.onMessage.addListener(
 
 /*excludedInitiatorDomains und requestDomains von declarativeNetRequest wird aktualisiert
 (falls z.B die Whitelist in den Settings geändert wurde)*/ 
-function updateWhitelistBlacklist() {
+function updateWhitelistBlacklist(action) {
   let blacklist;
   let whitelist;
   const url = chrome.runtime.getURL("storage/blacklist.json");
@@ -148,13 +163,14 @@ function updateWhitelistBlacklist() {
   .then(function(response) {
     response.json().then(function(response){
       blacklist = response;
+      //console.log("got blacklist");
       chrome.storage.sync.get(["whitelist"], function(response) {
         if(response.whitelist === undefined) {
           whitelist = [];
         } else {
           whitelist = response.whitelist;
         }
-        console.log(whitelist);
+        if (!action) blacklist = [""];
         chrome.declarativeNetRequest.updateDynamicRules({
           removeRuleIds: [1],
           addRules: [{

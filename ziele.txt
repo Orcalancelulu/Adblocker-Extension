@@ -1,0 +1,18 @@
+Maturaarbeit bis Freitag:
+
+- Fertiger Adblocker auf Chrome Extension Store raufgeladen
+- Struktur der schriftlichen Arbeit
+- Fragenbogen anfangen (genauere Ideen was gefragt wird): Fragebogen online stellen bis spätestens: Ende 1. Woche nach Schulbeginn
+
+
+Probleme: 
+
+Declarative Net Request hat 3 verschiedene Rule-Arten. 
+
+1. Static Ruleset (bleibt für immer, nicht änderbar, nur an- oder abschaltbar)
+2. Dynamic Rules (bleibt für immer, ist aber änderbar. Nur änderbar, nicht abstellbar (nur löschbar))
+3. Session Rules (bleibt für Session, ist änderbar. Nur änderbar, nicht abstellbar (nur löschbar)) fast wie Dynamic Rules
+
+
+Problem: 	Alle haben eigenes Id System. Habe die ganze Zeit Static Rules an und abgestellt, obwohl DynamicRules genutzt wurden.
+		Nun werden die requestDomains in den staticRulesets gemacht und die exludeInitiatorDomains in den DynamicRules
