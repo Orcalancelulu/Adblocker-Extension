@@ -1,5 +1,5 @@
 /*background.js ist im Hintergrund immer aktiv, wenn man den Browser offen hat. 
-Wird auch nie neu aufgerufen. Deshalb eignet es sich gut, um Daten zwischenzuspeichern (z.B adCounter)*/
+Wird auch nie neu aufgerufen. Deshalb eignet es sich gut, um Daten zwischenzuspeichern (z.B tabAdCountArray)*/
 
 
 let isNetworkEnabled = true;
@@ -39,7 +39,8 @@ chrome.webRequest.onCompleted.addListener(function(request) {
 }, {urls: ["<all_urls>"]})
 
 
-//immer den aktiven tab wissen (um adCounter richtig zwischenzuspeichern)
+//immer den aktiven tab wissen (um adCounter richtig zwischenzuspeichern), getAdCount() aufrufen, damit alle Netzwerkanfragen, welche geblockt wurden
+//(seit dem letzten Öffnen vom adblocker), beim richtigen tab gespeichert werden.
 chrome.tabs.onActivated.addListener(function(activeInfo) {
   if (typeof tabId != "undefined") console.log("changed tab, old count: " + getAdCount(tabId));
   tabId = activeInfo.tabId;
@@ -60,7 +61,7 @@ function enableDisableNetwork() {
 //falls der Container-Delete-Knopf gedrück wurde, wird dann schlussendlich diese Funktion aufgerufen
 function enableDisableContainerDelete() {
   if (isContainerEnabled) {
-    isContainerEnabled = false;
+    isContainerEnabled = false; 
   } else {
     isContainerEnabled = true;
   }
@@ -107,7 +108,7 @@ function saveAdCount(tab, adCount) {
 }
 
 
-//wird gezählt, wie viele Anfragen durchgekommen sind
+//wird gezählt, wie viele Netzwerk-Anfragen durchgekommen sind
 function getNetworkCount() {
   let networkCount = networkBeforeArray.length-networkAfterArray.length;
   networkBeforeArray = [];
@@ -147,7 +148,7 @@ chrome.runtime.onMessage.addListener(
     } else if (request.buttonEvent == "container") {
       enableDisableContainerDelete();
     } else if (request.buttonEvent == "whitelist") {
-      updateWhitelistBlacklist(isNetworkEnabled);
+      updateWhitelistBlacklist(isNetworkEnabled);  //whitelist wurde geändert und hochgeladen. Nun muss sie nur noch eingesetzt werden, deshalb updateWhitelistBlacklist
     }
   }
 )
