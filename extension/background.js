@@ -18,8 +18,13 @@ chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
 
 
 //beim starten des browsers müssen die alten daten noch gelöscht werden
-chrome.runtime.onStartup.addListener(function(response) {
+chrome.runtime.onStartup.addListener(function() {
   chrome.storage.local.set({tabAdCountArray: []});
+  chrome.storage.sync.get(["totalAdCount"], function(response) {
+    if (typeof response != "number") {
+      chrome.storage.sync.set({totalAdCount: 0});
+    }
+  });
   console.log("cleared");
 })
 
@@ -115,6 +120,9 @@ function saveAdCount(tab, adCount) { //asynchron
 
         totalAdCount = response.totalAdCount + adCount;
         chrome.storage.sync.set({totalAdCount: totalAdCount});
+      } else {
+        chrome.storage.sync.set({totalAdCount: adCount});
+
       }
     })
   }
@@ -153,6 +161,9 @@ function getNetworkCount() {
       if (response.totalAdCount > -1) {
         totalAdCount = response.totalAdCount + networkCount;
         chrome.storage.sync.set({totalAdCount: totalAdCount});
+      } else {
+        chrome.storage.sync.set({totalAdCount: networkCount});
+
       }
     })
   } 
