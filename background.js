@@ -11,6 +11,17 @@ let totalAdCount;
 let networkBeforeArray = [];
 let networkAfterArray = [];
 
+//wenn das backgroundskript startet, muss der gerade geöffnete tab herausgefunden werden
+chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+  tabId = tabs[0].id;
+});
+
+
+//beim starten des browsers müssen die alten daten noch gelöscht werden
+chrome.runtime.onStartup.addListener(function(response) {
+  chrome.storage.local.set({tabAdCountArray: []});
+  console.log("cleared");
+})
 
 //sobald der Browser geöffnet wird, wird totalAdCount definiert
 chrome.storage.sync.get(["totalAdCount"], function(response) {
@@ -42,9 +53,12 @@ chrome.webRequest.onCompleted.addListener(function(request) {
 //immer den aktiven tab wissen (um adCounter richtig zwischenzuspeichern), getAdCount() aufrufen, damit alle Netzwerkanfragen, welche geblockt wurden
 //(seit dem letzten Öffnen vom adblocker), beim richtigen tab gespeichert werden.
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-  if (typeof tabId != "undefined") console.log("changed tab, old count: " + getAdCount(tabId));
+  console.log(typeof tabId);
+  if (typeof tabId == "number") getAdCount(tabId, function(response){
+    console.log(response);
+  });
   tabId = activeInfo.tabId;
-})
+});
 
 //falls der Netzwerk-Knopf gedrück wurde, wird dann schlussendlich diese Funktion aufgerufen
 function enableDisableNetwork() {
@@ -68,27 +82,32 @@ function enableDisableContainerDelete() {
 }
 
 //durch den aktiven tab wird der zwischengespeicherte AdCount ausgelesen
-function getAdCount(tab) {
+function getAdCount(tab, functionToCall) { //asynchron
   console.log("currently on tab: " + tabId);
-  let tabAdCount = tabAdCountArray.find(tabAdCount => tabAdCount.tab == tab);
-  let tabAdIndex = tabAdCountArray.indexOf(tabAdCount);
-  console.log("index found at: " + tabAdIndex);
-  if (tabAdIndex == -1) {
-    let networkCount = getNetworkCount();
-    saveAdCount(tabId, networkCount);
-    console.log("index = -1, saving and getting networkcount: " + networkCount);
-    return networkCount;
-  }
+  getTabAdCountArray(function(tabAdCountArray) {
+    console.log(typeof tabAdCountArray);
+    let tabAdCount = tabAdCountArray.find(tabAdCount => tabAdCount.tab == tab);
+    let tabAdIndex = tabAdCountArray.indexOf(tabAdCount);
+    console.log("index found at: " + tabAdIndex);
+    if (tabAdIndex == -1) {
+      let networkCount = getNetworkCount();
+      saveAdCount(tabId, networkCount)
+      console.log("index = -1, saving and getting networkcount: " + networkCount);
+      functionToCall(networkCount);
+      return;
+    }
 
-  console.log("index found, getting both: saved count: " + tabAdCountArray[tabAdIndex].count);
-  tabAdCountArray[tabAdIndex].count += getNetworkCount();
-  console.log("with network: " + tabAdCountArray[tabAdIndex].count);
-
-  return tabAdCountArray[tabAdIndex].count;
+    console.log("index found, getting both: saved count: " + tabAdCountArray[tabAdIndex].count);
+    tabAdCountArray[tabAdIndex].count += getNetworkCount();
+    console.log("with network: " + tabAdCountArray[tabAdIndex].count);
+    setTabAdCountArray(tabAdCountArray);
+    functionToCall(tabAdCountArray[tabAdIndex].count);
+  
+  });
 }
 
 //adCount wird beim aktiven tab gespeichert
-function saveAdCount(tab, adCount) {
+function saveAdCount(tab, adCount) { //asynchron
 
   if (adCount > 0) {
     chrome.storage.sync.get(["totalAdCount"], function (response) {
@@ -104,9 +123,25 @@ function saveAdCount(tab, adCount) {
     "tab": tab, 
     "count": adCount
   }
-  tabAdCountArray.push(tabAdCount)
+
+  getTabAdCountArray(function(tabAdCountArray) {
+    tabAdCountArray.push(tabAdCount);
+    setTabAdCountArray(tabAdCountArray);
+  });
+
+
 }
 
+function setTabAdCountArray(tabAdCountArray) {
+  chrome.storage.local.set({tabAdCountArray: tabAdCountArray});
+}
+
+function getTabAdCountArray(functionToCall) {
+  chrome.storage.local.get(["tabAdCountArray"], function (response) {
+    console.log(response.tabAdCountArray);
+    functionToCall(response.tabAdCountArray);
+  })
+}
 
 //wird gezählt, wie viele Netzwerk-Anfragen durchgekommen sind
 function getNetworkCount() {
@@ -130,13 +165,17 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request.asking === "iwantdata") {
       console.log("data asked");
-      let adCount = getAdCount(tabId);
-      console.log("got " + adCount + " back");
-      chrome.storage.sync.get(["totalAdCount"], function (response) {
-        totalAdCount = response.totalAdCount;
-      })
-      if (adCount < 0) adCount = 0; 
-      sendResponse({dataLive: adCount, dataTotal: totalAdCount});     
+      getAdCount(tabId, function(adCount) {
+        console.log("got " + adCount + " back");
+        chrome.storage.sync.get(["totalAdCount"], function (response) {
+          totalAdCount = response.totalAdCount;
+          if (adCount < 0) adCount = 0; 
+          console.log("sending data: " + adCount);
+          sendResponse({dataLive: adCount, dataTotal: totalAdCount}); 
+        });
+      });
+      console.log("sending true");
+      return true; //damit der message port offen bleibt
     } else if (request.asking == "canidelete") {
       sendResponse({answer: isContainerEnabled});
     } else if (request.asking == "networkEnabled") {

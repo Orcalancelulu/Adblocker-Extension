@@ -16,3 +16,17 @@ Declarative Net Request hat 3 verschiedene Rule-Arten.
 
 Problem: 	Alle haben eigenes Id System. Habe die ganze Zeit Static Rules an und abgestellt, obwohl DynamicRules genutzt wurden.
 		Nun werden die requestDomains in den staticRulesets gemacht und die exludeInitiatorDomains in den DynamicRules
+
+
+Weitere optionale Ziele:
+
+TotalAdCount schöner darstellen
+
+YoutubeAds blockieren
+
+
+
+weiteres problem: background.js startet manchmal einfach neu, daten werden somit gelöscht welche dort zwischengespeichert werden
+
+um das zu beheben, wird es bei chrome.storage.local gespeichert (alles async). wegen den async funktionen geht es eine weile bis das ergebnis zurückkommt. Deshalb muss man währenddessen return true zurückgeben, damit der message port offen bleibt
+

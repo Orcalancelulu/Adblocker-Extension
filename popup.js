@@ -95,7 +95,6 @@ function checkSlider() {
 function changeSlider() {
   if (slider.checked) {
     if(!buttonNetworkEnabled) sendNetworkMessage();
-    if(!buttonDeleterEnabled) sendDeleterMessage();
   } else {
     if (buttonNetworkEnabled) sendNetworkMessage();
     if (buttonDeleterEnabled) sendDeleterMessage();
