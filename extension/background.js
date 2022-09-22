@@ -21,9 +21,10 @@ chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
 chrome.runtime.onStartup.addListener(function() {
   chrome.storage.local.set({tabAdCountArray: []});
   chrome.storage.sync.get(["totalAdCount"], function(response) {
-    if (typeof response != "number") {
+    if (typeof response.totalAdCount != "number") {
       chrome.storage.sync.set({totalAdCount: 0});
     }
+    console.log("totaladcount is at startup: " + response.totalAdCount);
   });
   console.log("cleared");
 })
@@ -44,15 +45,17 @@ updateWhitelistBlacklist(isNetworkEnabled);
 
 
 chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie viele Anfragen reingehen
+  console.log("getting in");
   networkBeforeArray.push(request.url);
-}, {urls: ["<all_urls>"]})
+}, {urls: ['http://*/*', 'https://*/*']});
 
 
 /*zählen, wie viele Anfragen es durch den Filter schaffen, 
 Differenz von vorher ist die Anzahl geblockter Werbung*/
 chrome.webRequest.onCompleted.addListener(function(request) { 
+  console.log("completed");
  networkAfterArray.push(request.url);
-}, {urls: ["<all_urls>"]})
+}, {urls: ['http://*/*', 'https://*/*']});
 
 
 //immer den aktiven tab wissen (um adCounter richtig zwischenzuspeichern), getAdCount() aufrufen, damit alle Netzwerkanfragen, welche geblockt wurden
