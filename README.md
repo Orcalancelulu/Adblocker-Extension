@@ -1,4 +1,6 @@
 # Adblocker-Extension
+Die Extension wurde im Rahmen meiner Maturaarbeit erstellt. Dieses Repository enthält den gesamten Code, welcher ich dazu benutzt habe und von der Extension benutzt wird. 
+ 
  
 # Feature List
 
@@ -13,8 +15,3 @@ Adblocker aktivieren, wenn man die Seite öffnet (durchgehend aktiv) ✔️
 Anzeigen, wie viel Werbung geblockt wurde ✔️
 
 Auf den Chorme Web Store hochladen ✔️
-
-
-# Weitere Ideen für die Maturaarbeit:
-
-Umfrage zu Werbung und Adblocker machen und diese Informationen in die schriftliche Arbeit miteinfliessen lassen.
