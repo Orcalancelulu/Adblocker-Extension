@@ -15,3 +15,5 @@ Adblocker aktivieren, wenn man die Seite öffnet (durchgehend aktiv) ✔️
 Anzeigen, wie viel Werbung geblockt wurde ✔️
 
 Auf den Chorme Web Store hochladen ✔️
+
+Link: [easyAdBlock](https://chrome.google.com/webstore/detail/easyadblock/fmgcpekpoegedifffnhamomgainndjpb)
