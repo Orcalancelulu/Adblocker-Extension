@@ -1,5 +1,5 @@
 # Adblocker-Extension
-Die Extension wurde im Rahmen meiner Maturaarbeit erstellt. Dieses Repository enthält den gesamten Code, welcher ich dazu benutzt habe und von der Extension benutzt wird. 
+Die Extension wurde im Rahmen meiner Maturaarbeit erstellt. Dieses Repository enthält den gesamten Code, welchen ich dazu benutzt habe und von der Extension benutzt wird. 
  
  
 # Feature List
