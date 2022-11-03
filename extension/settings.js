@@ -4,7 +4,7 @@ let plusElement = document.getElementById("addInput");
 let whitelist;
 
 
-
+//damit die Whitelist angezeigt werden kann, muss sie zuerst geladen werden
 chrome.storage.sync.get(["whitelist"], function(response) {
     whitelist = response.whitelist;
     if (whitelist === undefined) whitelist = [];
@@ -17,6 +17,7 @@ chrome.storage.sync.get(["whitelist"], function(response) {
 plusElement.addEventListener("click", addToWhitelist)
 homeButton.addEventListener("click", openHome);
 
+//wenn man auf das + drückt, wird der Inhalt des Textfeldes gesichtert
 function addToWhitelist() {
     let inputElement = document.getElementById("whitelistInput");
     if (inputElement.value.length < 1) return;
@@ -27,6 +28,7 @@ function addToWhitelist() {
     chrome.runtime.sendMessage({buttonEvent: "whitelist"});
 }
 
+//ein Html Listenelement wird mit gegebenem Inhalt erstellt und hinzugefügt
 function createListElement(siteName) {
     LiElement = document.createElement("li");
     siteNameElement = document.createElement("a");
@@ -52,6 +54,7 @@ function createListElement(siteName) {
     document.getElementById("list").appendChild(LiElement);
 }
 
+//wenn der Pfeil gedrückt wird, kommt man zurück zur Hauptseite
 function openHome() {
     window.open("popup.html", "_self");
 }

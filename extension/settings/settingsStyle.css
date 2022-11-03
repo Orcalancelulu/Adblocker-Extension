@@ -91,6 +91,7 @@ li {
     cursor: pointer;
 }
 
+/*Code von linie 95 bis 178 is von: https://tutorialzine.com/2014/07/css-inline-help-tips, zuletzt besucht: 30.09.2022*/
 .help-tip{
 
     z-index: 10;

@@ -114,7 +114,7 @@ a {
   height: 20px;
 }
 
-
+/*Code von Linie 118 bis 186 ist von: https://www.w3schools.com/howto/howto_css_switch.asp, zuletzt besucht 30.09.2022*/
 .switch {
   position: absolute;
   width: 40px;
@@ -186,8 +186,7 @@ input:checked + .slider:before {
 }
 
 
-/*fragezeichen*/
-
+/*Code von linie 190 bis 273 is von: https://tutorialzine.com/2014/07/css-inline-help-tips, zuletzt besucht: 30.09.2022*/
 .help-tip{
   position: absolute;
   bottom: 20px;

@@ -17,6 +17,7 @@ function blocking() {
     sendMessageToExtension(); //fertig geblockt, Anzahl geblockte Werbung wird weitergeleitet an background.js
 }
 
+//sende Anzahl blockierter Werbung an den Service Worker
 function sendMessageToExtension() {
     chrome.runtime.sendMessage({info: maxAdCounter});
 }
@@ -29,7 +30,7 @@ function searchAds(childList) { /*childlist ist eine Liste aus Html Elementen. F
         let foundIdElements = child.id.search(regexSearch);
         let foundClassElements = child.classList.value.search(regexSearch);
         if (foundIdElements >= 0 || foundClassElements >= 0) {
-            if (child.tagName == "DIV") adCounter++;
+            adCounter++;
             child.remove();
         } else if(child.children != null) {
             searchAds(child.children);

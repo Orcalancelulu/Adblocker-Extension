@@ -1,7 +1,3 @@
-/*background.js ist im Hintergrund immer aktiv, wenn man den Browser offen hat. 
-Wird auch nie neu aufgerufen. Deshalb eignet es sich gut, um Daten zwischenzuspeichern (z.B tabAdCountArray)*/
-
-
 let isNetworkEnabled = true;
 let isContainerEnabled = false;
 let tabAdCountArray = [];
@@ -24,10 +20,22 @@ chrome.runtime.onStartup.addListener(function() {
     if (typeof response.totalAdCount != "number") {
       chrome.storage.sync.set({totalAdCount: 0});
     }
-    console.log("totaladcount is at startup: " + response.totalAdCount);
   });
-  console.log("cleared");
 })
+
+//beim starten sollen die Einstellungen gleich bleiben. Deswegen wird isNetworkEnabled auf das gespeicherte gesetzt
+chrome.storage.local.get(["networkEnabled"], function(response) {
+  if (response.networkEnabled != undefined) {
+    isNetworkEnabled = response.networkEnabled;
+  }
+});
+
+//beim starten sollen die Einstellungen gleich bleiben. Deswegen wird isContainerEnabled auf das gespeicherte gesetzt
+chrome.storage.local.get(["containerEnabled"], function(response) {
+  if (response.containerEnabled != undefined) {
+    isContainerEnabled = response.containerEnabled;
+  }
+});
 
 //sobald der Browser geöffnet wird, wird totalAdCount definiert
 chrome.storage.sync.get(["totalAdCount"], function(response) {
@@ -36,7 +44,6 @@ chrome.storage.sync.get(["totalAdCount"], function(response) {
     return;
   }
   totalAdCount = response.totalAdCount;
-  //console.log("totaladcount has been set: " + totalAdCount);
 })
 
 /*wenn die Extension gestartet wird, muss die Black- und Whitelist von 
@@ -45,7 +52,6 @@ updateWhitelistBlacklist(isNetworkEnabled);
 
 
 chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie viele Anfragen reingehen
-  console.log("getting in");
   networkBeforeArray.push(request.url);
 }, {urls: ['http://*/*', 'https://*/*']});
 
@@ -53,17 +59,14 @@ chrome.webRequest.onBeforeRequest.addListener(function(request) { //zählen, wie
 /*zählen, wie viele Anfragen es durch den Filter schaffen, 
 Differenz von vorher ist die Anzahl geblockter Werbung*/
 chrome.webRequest.onCompleted.addListener(function(request) { 
-  console.log("completed");
- networkAfterArray.push(request.url);
+  networkAfterArray.push(request.url);
 }, {urls: ['http://*/*', 'https://*/*']});
 
 
 //immer den aktiven tab wissen (um adCounter richtig zwischenzuspeichern), getAdCount() aufrufen, damit alle Netzwerkanfragen, welche geblockt wurden
 //(seit dem letzten Öffnen vom adblocker), beim richtigen tab gespeichert werden.
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-  console.log(typeof tabId);
   if (typeof tabId == "number") getAdCount(tabId, function(response){
-    console.log(response);
   });
   tabId = activeInfo.tabId;
 });
@@ -77,6 +80,7 @@ function enableDisableNetwork() {
     isNetworkEnabled = true;
     updateWhitelistBlacklist(true);
   }
+  saveBlockingMethods()
 }
 
 
@@ -87,27 +91,27 @@ function enableDisableContainerDelete() {
   } else {
     isContainerEnabled = true;
   }
+  saveBlockingMethods()
+}
+
+//die Einstellungen werden gespeichert, damit sie beim Neustarten des Service Workers auch beibehalten werden.
+function saveBlockingMethods() {
+  chrome.storage.local.set({networkEnabled: isNetworkEnabled, containerEnabled: isContainerEnabled});
 }
 
 //durch den aktiven tab wird der zwischengespeicherte AdCount ausgelesen
 function getAdCount(tab, functionToCall) { //asynchron
-  console.log("currently on tab: " + tabId);
   getTabAdCountArray(function(tabAdCountArray) {
-    console.log(typeof tabAdCountArray);
     let tabAdCount = tabAdCountArray.find(tabAdCount => tabAdCount.tab == tab);
     let tabAdIndex = tabAdCountArray.indexOf(tabAdCount);
-    console.log("index found at: " + tabAdIndex);
     if (tabAdIndex == -1) {
       let networkCount = getNetworkCount();
       saveAdCount(tabId, networkCount)
-      console.log("index = -1, saving and getting networkcount: " + networkCount);
       functionToCall(networkCount);
       return;
     }
 
-    console.log("index found, getting both: saved count: " + tabAdCountArray[tabAdIndex].count);
     tabAdCountArray[tabAdIndex].count += getNetworkCount();
-    console.log("with network: " + tabAdCountArray[tabAdIndex].count);
     setTabAdCountArray(tabAdCountArray);
     functionToCall(tabAdCountArray[tabAdIndex].count);
   
@@ -143,13 +147,14 @@ function saveAdCount(tab, adCount) { //asynchron
 
 }
 
+//speichert die Liste mit der Anzahl blockierter Werbung pro Tab im lokalen Speicher
 function setTabAdCountArray(tabAdCountArray) {
   chrome.storage.local.set({tabAdCountArray: tabAdCountArray});
 }
 
+//nimmt die Liste mit der Anzahl blockierter Werbung pro Tab aus dem lokalen Speicher
 function getTabAdCountArray(functionToCall) {
   chrome.storage.local.get(["tabAdCountArray"], function (response) {
-    console.log(response.tabAdCountArray);
     functionToCall(response.tabAdCountArray);
   })
 }
@@ -170,7 +175,6 @@ function getNetworkCount() {
       }
     })
   } 
-  console.log("getting networkcount: " + networkCount);
   return networkCount;
 }
 
@@ -178,17 +182,13 @@ function getNetworkCount() {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request.asking === "iwantdata") {
-      console.log("data asked");
       getAdCount(tabId, function(adCount) {
-        console.log("got " + adCount + " back");
         chrome.storage.sync.get(["totalAdCount"], function (response) {
           totalAdCount = response.totalAdCount;
           if (adCount < 0) adCount = 0; 
-          console.log("sending data: " + adCount);
           sendResponse({dataLive: adCount, dataTotal: totalAdCount}); 
         });
       });
-      console.log("sending true");
       return true; //damit der message port offen bleibt
     } else if (request.asking == "canidelete") {
       sendResponse({answer: isContainerEnabled});
@@ -212,12 +212,13 @@ chrome.runtime.onMessage.addListener(
 function updateWhitelistBlacklist(action) {
   let blacklist;
   let whitelist;
+
+  //the data of the blacklist is from: https://pgl.yoyo.org/adservers/
   const url = chrome.runtime.getURL("storage/blacklist.json");
   fetch(url)
   .then(function(response) {
     response.json().then(function(response){
       blacklist = response;
-      //console.log("got blacklist");
       chrome.storage.sync.get(["whitelist"], function(response) {
         if(response.whitelist === undefined) {
           whitelist = [];
@@ -234,7 +235,7 @@ function updateWhitelistBlacklist(action) {
             "condition": {"excludedInitiatorDomains": whitelist, "requestDomains": blacklist}
           }]
         })
-      }) //hier: networkadcounter auch mit tab listen machen
+      })
     });
   })
 }
