@@ -1,5 +1,5 @@
 # Adblocker-Extension
-Die Extension wurde im Rahmen meiner Maturaarbeit erstellt. Dieses Repository enthält den gesamten Code, welcher ich dazu benutzt habe und von der Extension benutzt wird. 
+Die Extension wurde im Rahmen meiner Maturaarbeit erstellt. Dieses Repository enthält den gesamten Code, welchen ich dazu benutzt habe und von der Extension benutzt wird. 
  
  
 # Feature List
@@ -15,3 +15,5 @@ Adblocker aktivieren, wenn man die Seite öffnet (durchgehend aktiv) ✔️
 Anzeigen, wie viel Werbung geblockt wurde ✔️
 
 Auf den Chorme Web Store hochladen ✔️
+
+Link: [easyAdBlock](https://chrome.google.com/webstore/detail/easyadblock/fmgcpekpoegedifffnhamomgainndjpb)
